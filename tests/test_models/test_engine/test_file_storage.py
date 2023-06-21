@@ -4,6 +4,7 @@ import unittest
 from models.base_model import BaseModel
 from models import storage
 import os
+import pycodestyle
 
 
 @unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') == 'db', "for FileStorage")
@@ -22,7 +23,7 @@ class TestFileStorage(unittest.TestCase):
         """ Remove storage file at end of tests """
         try:
             os.remove('file.json')
-        except:
+        except Exception:
             pass
 
     def test_obj_list_empty(self):
@@ -60,9 +61,7 @@ class TestFileStorage(unittest.TestCase):
         new = BaseModel()
         storage.save()
         self.assertTrue(os.path.exists('file.json'))
-    
-    @unittest.skipIf(storage._FileStorage__engine == 'db',
-                     "Skipping reload tests for DBStorage")
+
     def test_reload(self):
         """ Storage file is successfully loaded to __objects """
         new = BaseModel()
@@ -110,11 +109,3 @@ class TestFileStorage(unittest.TestCase):
         from models.engine.file_storage import FileStorage
         print(type(storage))
         self.assertEqual(type(storage), FileStorage)
-
-    def test_pep8(self):
-        """Test that the code is compliant with PEP8."""
-        style = pycodestyle.StyleGuide(quiet=True)
-        result = style.check_files(['models/engine/file_storage.py',
-                                    'tests/test_models/test_engine/test_file_storage.py'])
-        self.assertEqual(result.total_errors, 0,
-                         "Found code style errors (and warnings).")

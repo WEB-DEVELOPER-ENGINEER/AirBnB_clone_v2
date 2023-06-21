@@ -8,7 +8,7 @@ import unittest
 
 @unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') == 'db',
                  "test only for FileStorage")
-class Test_Amenity(test_basemodel):
+class Test_Amenity(TestBasemodel):
     """TEST """
 
     def __init__(self, *args, **kwargs):

@@ -5,7 +5,7 @@ from models.state import State
 import unittest
 
 
-class TestState(test_basemodel):
+class TestState(TestBasemodel):
     """TEST """
 
     def __init__(self, *args, **kwargs):

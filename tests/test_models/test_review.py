@@ -7,7 +7,7 @@ import unittest
 
 @unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') == 'db',
                  "test only for FileStorage")
-class TestReview(test_basemodel):
+class TestReview(TestBasemodel):
     """TEST """
 
     def __init__(self, *args, **kwargs):
