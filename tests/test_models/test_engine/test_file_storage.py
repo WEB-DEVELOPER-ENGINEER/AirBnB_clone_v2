@@ -6,7 +6,7 @@ from models import storage
 import os
 
 
-class test_fileStorage(unittest.TestCase):
+class TestFileStorage(unittest.TestCase):
     """ Class to test the file storage method """
 
     def setUp(self):
@@ -59,7 +59,9 @@ class test_fileStorage(unittest.TestCase):
         new = BaseModel()
         storage.save()
         self.assertTrue(os.path.exists('file.json'))
-
+    
+    @unittest.skipIf(storage._FileStorage__engine == 'db',
+                     "Skipping reload tests for DBStorage")
     def test_reload(self):
         """ Storage file is successfully loaded to __objects """
         new = BaseModel()
@@ -107,3 +109,11 @@ class test_fileStorage(unittest.TestCase):
         from models.engine.file_storage import FileStorage
         print(type(storage))
         self.assertEqual(type(storage), FileStorage)
+
+    def test_pep8(self):
+        """Test that the code is compliant with PEP8."""
+        style = pycodestyle.StyleGuide(quiet=True)
+        result = style.check_files(['models/engine/file_storage.py',
+                                    'tests/test_models/test_engine/test_file_storage.py'])
+        self.assertEqual(result.total_errors, 0,
+                         "Found code style errors (and warnings).")
