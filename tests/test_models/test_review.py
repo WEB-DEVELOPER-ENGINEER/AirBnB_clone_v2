@@ -5,6 +5,7 @@ from models.review import Review
 import os
 import unittest
 
+
 @unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') == 'db',
                  "test only for FileStorage")
 class TestReview(TestBasemodel):

@@ -6,8 +6,7 @@ import os
 import unittest
 
 
-@unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') == 'db',
-        "test only for FileStorage")
+@unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') == 'db', "test FileStorage")
 class TestUser(TestBasemodel):
     """TEST """
 

@@ -5,6 +5,7 @@ from models.place import Place
 import os
 import unittest
 
+
 @unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') == 'db',
                  "test only for FileStorage")
 class TestPlace(TestBasemodel):
