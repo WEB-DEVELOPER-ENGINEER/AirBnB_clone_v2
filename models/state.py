@@ -9,14 +9,14 @@ from os import getenv
 
 class State(BaseModel, Base):
     """ State class """
-    if models.is_type == "db":
+    if getenv("HBNB_TYPE_STORAGE") == "db":
         __tablename__ = 'states'
         name = Column(String(128), nullable=False)
         cities = relationship('City', backref='state', cascade='delete')
     else:
         name = ""
 
-    if models.is_type != 'db':
+    if getenv("HBNB_TYPE_STORAGE") != 'db':
         @property
         def cities(self):
             cities_list = []
