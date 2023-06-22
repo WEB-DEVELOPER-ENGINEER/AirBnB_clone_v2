@@ -35,19 +35,17 @@ class DBStorage:
 
     def all(self, cls=None):
         '''Run a query on the Current database session'''
-        all_dict = {}
-        self.close()
-        if cls:
-            for item in self.__session.query(cls).all():
-                key = '{}.{}'.format(item.__class__.name, item.id)
-                all_dict[key] = item
+        if not cls:
+            data_list = self.__session.query(Amenity)
+            data_list.extend(self.__session.query(City))
+            data_list.extend(self.__session.query(Place))
+            data_list.extend(self.__session.query(Review))
+            data_list.extend(self.__session.query(State))
+            data_list.extend(self.__session.query(User))
         else:
-            for item, value in models.classes.items():
-                if type(value) is not type(BaseModel):
-                    for it in self.__session.query(value).all():
-                        key = '{}.{}'.format(it.__class__.__name__, it.id)
-                        all_dict[key] = it
-        return all_dict
+            data_list = self.__session.query(cls)
+        return {'{}.{}'.format(type(obj).__name__, obj.id): obj
+                for obj in data_list}
 
     def new(self, obj):
         '''Add the object to current database session'''
