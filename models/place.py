@@ -32,8 +32,9 @@ class Place(BaseModel, Base):
     latitude = Column(Float)
     longitude = Column(Float)
     reviews = relationship('Review', backref='place', cascade='delete')
-    amenities = relationship('Amenity', secondary=relationship_table,
-                             viewonly=False)
+    if models.is_type == "db":
+        amenities = relationship('Amenity', secondary=relationship_table,
+                                 viewonly=False)
     amenity_ids = []
 
     if models.is_type != 'db':
