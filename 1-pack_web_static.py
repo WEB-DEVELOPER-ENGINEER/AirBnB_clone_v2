@@ -14,7 +14,7 @@ def do_pack():
                                                              now.hour,
                                                              now.minute,
                                                              now.second)
-    result = local("tar -czf {} web_static".format(filename))
+    result = local("tar -vczf {} web_static".format(filename))
     if result.succeeded:
         return (filename)
     else:
