@@ -16,3 +16,5 @@ def do_pack():
         return (filename)
     else:
         return None
+
+archive_path = do_pack()
