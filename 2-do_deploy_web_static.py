@@ -1,14 +1,17 @@
 #!/usr/bin/python3
-"""
-Distributes an archive to web servers
-"""
+"""A module for web application deployment with Fabric."""
 
-from fabric.api import put, run, env
+
+from fabric import Connection
+from fabric import task
 from os.path import exists
-env.hosts = ['34.207.253.78', '3.84.239.44']
 
 
-def do_deploy(archive_path):
+env = {'hosts': ['34.207.253.78', '3.84.239.44']}
+
+
+@task
+def do_deploy(c, archive_path):
     """distributes an archive to the web servers"""
     if exists(archive_path) is False:
         return False
@@ -16,14 +19,15 @@ def do_deploy(archive_path):
         file_name = archive_path.split("/")[-1]
         no_ext = file_name.split(".")[0]
         path = "/data/web_static/releases/"
-        put(archive_path, '/tmp/')
-        run('mkdir -p {}{}/'.format(path, no_ext))
-        run('tar -xzf /tmp/{} -C {}{}/'.format(file_name, path, no_ext))
-        run('rm /tmp/{}'.format(file_name))
-        run('mv {0}{1}/web_static/* {0}{1}/'.format(path, no_ext))
-        run('rm -rf {}{}/web_static'.format(path, no_ext))
-        run('rm -rf /data/web_static/current')
-        run('ln -s {}{}/ /data/web_static/current'.format(path, no_ext))
+        conn = Connection(env.hosts[0])
+        conn.put(archive_path, '/tmp/')
+        conn.run('mkdir -p {}{}/'.format(path, no_ext))
+        conn.run('tar -xzf /tmp/{} -C {}{}/'.format(file_name, path, no_ext))
+        conn.run('rm /tmp/{}'.format(file_name))
+        conn.run('mv {0}{1}/web_static/* {0}{1}/'.format(path, no_ext))
+        conn.run('rm -rf {}{}/web_static'.format(path, no_ext))
+        conn.run('rm -rf /data/web_static/current')
+        conn.run('ln -s {}{}/ /data/web_static/current'.format(path, no_ext))
         return True
     except Exception:
         return False
