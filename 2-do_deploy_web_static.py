@@ -1,14 +1,10 @@
 #!/usr/bin/python3
-"""
-Fabric script that distributes an archive to your web servers
-"""
+""" script that distributes an archive to your web servers """
 from fabric import Connection, task
 from os.path import exists
-
 env = {'hosts': ['34.207.253.78', '3.84.239.44']}
-
 @task
-def do_deploy(c, archive_path):
+def do_deploy(archive_path):
     """distributes an archive to the web servers"""
     if exists(archive_path) is False:
         return False
