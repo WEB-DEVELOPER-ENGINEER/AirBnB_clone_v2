@@ -1,99 +1,29 @@
-#!/usr/bin/env python3
-
+#!/usr/bin/python3
 """
-Fabric script to deploy an archive to web servers.
+Distributes an archive to web servers
 """
 
-import os
-import datetime
-from fabric.api import env, put, run, cd
-from fabric.contrib.files import exists
+from fabric.api import put, run, env
+from os.path import exists
+env.hosts = ['34.207.253.78', '3.84.239.44']
 
-# Set the web server IP addresses
-env.hosts = ["35.243.225.26", "34.75.87.53"]
 
-# Set the remote directory for storing the archive
-env.remote_dir = "/data/web_static/releases/"
-
-# Set the name of the archive file
-env.archive_name = "web_static"
-
-# Set the directory for storing error logs
-env.error_log_dir = os.path.join(
-    os.path.dirname(os.path.abspath(__file__)), "logs"
-)
-
-def _get_timestamp():
-    """Get the current timestamp in the format YYYYMMDDHHMMSS"""
-
-    now = datetime.datetime.now()
-    return now.strftime("%Y%m%d%H%M%S")
-
-def _get_remote_archive_path():
-    """Get the path to the remote archive file"""
-
-    timestamp = _get_timestamp()
-    return os.path.join(env.remote_dir, env.archive_name + "_" + timestamp + ".tgz")
-
-def _create_remote_dir():
-    """Create the remote directory for storing the archive"""
-
-    run("sudo mkdir -p {}".format(env.remote_dir))
-
-def _upload_archive(archive_path):
-    """Upload the archive to the remote server"""
-
-    remote_archive_path = _get_remote_archive_path()
-    put(archive_path, remote_archive_path)
-    return remote_archive_path
-
-def _extract_archive(remote_archive_path):
-    """Extract the archive on the remote server"""
-
-    remote_dir = os.path.join(
-        env.remote_dir, os.path.splitext(os.path.basename(remote_archive_path))[0]
-    )
-
-    run("sudo mkdir -p {}".format(remote_dir))
-    with cd(remote_dir):
-        run("sudo tar -xzf {}".format(remote_archive_path))
-
-    return remote_dir
-
-def _create_symlink(remote_dir):
-    """Create a symbolic link to the new release"""
-
-    run("sudo rm -f /data/web_static/current")
-    run("sudo ln -s {} /data/web_static/current".format(remote_dir))
-
-def deploy(archive_path):
-    """Deploy the archive to the web servers"""
-
-    if not os.path.exists(archive_path):
-        print("ERROR: Archive file not found: {}".format(archive_path))
+def do_deploy(archive_path):
+    """distributes an archive to the web servers"""
+    if exists(archive_path) is False:
         return False
-
     try:
-        # Create the remote directory for storing the archive
-        _create_remote_dir()
-
-        # Upload the archive to the remote server
-        remote_archive_path = _upload_archive(archive_path)
-
-        # Extract the archive on the remote server
-        remote_dir = _extract_archive(remote_archive_path)
-
-        # Create a symbolic link to the new release
-        _create_symlink(remote_dir)
-
-        print("Deployment successful!")
+        file_name = archive_path.split("/")[-1]
+        no_ext = file_name.split(".")[0]
+        path = "/data/web_static/releases/"
+        put(archive_path, '/tmp/')
+        run('mkdir -p {}{}/'.format(path, no_ext))
+        run('tar -xzf /tmp/{} -C {}{}/'.format(file_name, path, no_ext))
+        run('rm /tmp/{}'.format(file_name))
+        run('mv {0}{1}/web_static/* {0}{1}/'.format(path, no_ext))
+        run('rm -rf {}{}/web_static'.format(path, no_ext))
+        run('rm -rf /data/web_static/current')
+        run('ln -s {}{}/ /data/web_static/current'.format(path, no_ext))
         return True
-
-    except Exception as e:
-        error_log_path = os.path.join(
-            env.error_log_dir, "deploy_error_{}.log".format(_get_timestamp())
-        )
-        with open(error_log_path, "w") as f:
-            f.write(str(e))
-        print("ERROR: Deployment failed. See {} for details.".format(error_log_path))
+    except Exception:
         return False
