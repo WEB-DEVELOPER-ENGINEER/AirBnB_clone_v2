@@ -6,7 +6,6 @@ import models
 from models.review import Review
 from sqlalchemy.orm import relationship
 from sqlalchemy import Column, Integer, Float, String, ForeignKey, Table
-from sqlalchemy.dialects.mysql import VARCHAR
 
 if models.is_type == "db":
     relationship_table = Table('place_amenity', Base.metadata,
