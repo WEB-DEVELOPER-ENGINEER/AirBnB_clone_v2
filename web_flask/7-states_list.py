@@ -5,6 +5,7 @@ Routes:
 """
 from models import storage
 from flask import Flask
+from models.state import State
 from flask import render_template
 app = Flask(__name__)
 
@@ -13,15 +14,15 @@ app = Flask(__name__)
 def states_list():
     """Displays an HTML page with a list of all State objects in DBStorage.
     """
-    states = storage.all("State")
-    return render_template("7-states_list.html", states=states)
+    states_list = list(storage.all(State).values())
+    states_list.sort(key=lambda x: x.name)
+    return render_template('7-states_list.html', states=states_list)
 
 
 @app.teardown_appcontext
 def close(self):
-    """Remove the current SQLAlchemy session."""
+    """Closes session"""
     storage.close()
 
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(port=5000, host='0.0.0.0')
