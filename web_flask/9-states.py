@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""Starts a Flask web app listening on 0.0.0.0, port 5000.
+"""Start a Flask web app listening on 0.0.0.0, port 5000.
 Routes:
     /states: HTML page with a list of all State objects.
     /states/<id>: HTML page displaying the given state with <id>"""
@@ -14,6 +14,7 @@ app = Flask(__name__)
 def states():
     """/states_list route"""
     states_list = list(storage.all(State).values())
+    states_list.sort(key=lambda x: x.name)
     return render_template('9-states.html', states=states_list)
 
 
@@ -23,11 +24,12 @@ def state_cities_list(id=None):
     e = None
     states = storage.all(State)
     c = list(storage.all(City).values())
+    c.sort(key=lambda x: x.name)
     if id:
         key = "State." + id
         if key in states.keys():
             e = states[key]
-    return render_template('9-states.html', cities=c, state=e)
+    return render_template('9-states.html', cities=c, state=e, id=id)
 
 
 @app.teardown_appcontext
