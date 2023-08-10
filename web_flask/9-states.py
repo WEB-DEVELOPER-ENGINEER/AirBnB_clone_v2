@@ -27,7 +27,7 @@ def state_cities_list(id=None):
         key = "State." + id
         if key in states.keys():
             e = states[key]
-    return render_template('9-states.html', cities=c, state=e, id=id)
+    return render_template('9-states.html', cities=c, state=e)
 
 
 @app.teardown_appcontext
