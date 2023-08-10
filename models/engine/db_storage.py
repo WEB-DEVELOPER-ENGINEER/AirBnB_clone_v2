@@ -34,18 +34,24 @@ class DBStorage:
             Base.metadata.drop_all(self.__engine)
 
     def all(self, cls=None):
-        '''Run a query on the Current database session'''
-        if not cls:
-            data_list = self.__session.query(Amenity)
-            data_list.extend(self.__session.query(City))
-            data_list.extend(self.__session.query(Place))
-            data_list.extend(self.__session.query(Review))
-            data_list.extend(self.__session.query(State))
-            data_list.extend(self.__session.query(User))
+        """Retreive all instances for the specified class"""
+        instances = {}
+        if cls:
+            records = self.__session.query(cls).all()
+            for row in records:
+                key = cls.__name__ + '.' + row.id
+                instances[key] = row
         else:
-            data_list = self.__session.query(cls)
-        return {'{}.{}'.format(type(obj).__name__, obj.id): obj
-                for obj in data_list}
+            clases = [User, Place, State, City, Amenity, Review]
+            for clase in clases:
+                try:
+                    records = self.__session.query(clase).all()
+                except Exception:
+                    continue
+                for record in records:
+                    key = "{}.{}".format(type(record).__name__, record.id)
+                    instances[key] = record
+        return instances
 
     def new(self, obj):
         '''Add the object to current database session'''
